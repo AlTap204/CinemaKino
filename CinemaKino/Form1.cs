@@ -110,7 +110,7 @@ namespace CinemaKino
         {
             try
             {
-                
+
                 string archivo = "Archivos\\MOCK_DATA.csv";
                 string delimitador = ",";
                 List<Dato> datos = LeerTexto(archivo, delimitador);
@@ -151,6 +151,54 @@ namespace CinemaKino
         private void button2_Click(object sender, EventArgs e)
         {
             Busqueda();
+        }
+
+        private List<Dato> LeerJson()
+        {
+            try
+            {
+                string data = File.ReadAllText("Archivos\\MOCK_DATA.json");
+                var options = new System.Text.Json.JsonSerializerOptions();
+                options.PropertyNameCaseInsensitive = true;
+
+                var datosJson = System.Text.Json.JsonSerializer.Deserialize<List<DatoJson>>(data, options);
+
+                List<Dato> datos = new List<Dato>();
+
+                foreach (var datoJson in datosJson)
+                {
+                    Dato dato = new Dato();
+                    dato.FirstName = datoJson.FirstName;
+                    dato.LastName = datoJson.LastName;
+                    datos.Add(dato);
+
+
+                }
+                return datos;
+
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        private void btnJson_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //List<Dato> datos = LeerCSV();
+                List<Dato> datos = LeerJson();
+                //Insertar(datos);
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
