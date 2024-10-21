@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
+using CinemaKino;
 
 namespace CinemaKino
 {
@@ -182,8 +183,6 @@ namespace CinemaKino
                     dato.Seat = datoJson.Seat;
                     dato.CinemaRoom = datoJson.CinemaRoom;
                     datos.Add(dato);
-
-
                 }
                 return datos;
 
@@ -201,22 +200,36 @@ namespace CinemaKino
             try
             {
                 string archivo = "Archivos\\MOCK_DATA.xml";
-
-                XmlSerializer serializer = new XmlSerializer(typeof(List<Dato>));
+                XmlSerializer serializer = new XmlSerializer(typeof(Dataset));
 
                 using (FileStream fs = new FileStream(archivo, FileMode.Open))
                 {
-                    var resultado = serializer.Deserialize(fs);
+                    var dataset = (Dataset)serializer.Deserialize(fs);
 
-                    // Verificar si el resultado es null o no es del tipo List<Dato>
-                    if (resultado is List<Dato> datos)
+                    List<Dato> datos = new List<Dato>();
+
+                    foreach (var record in dataset.Records)
                     {
-                        return datos;
+                        Dato dato = new Dato
+                        {
+                            FirstName = record.FirstName,
+                            LastName = record.LastName,
+                            Email = record.Email,
+                            Phone = record.Phone,
+                            Gender = record.Gender,
+                            MovieGenres = record.MovieGenres,
+                            MovieTitle = record.MovieTitle,
+                            Date = DateOnly.Parse(record.Date),
+                            Time = TimeOnly.Parse(record.Time),
+                            Price = decimal.Parse(record.Price.Trim('$')),
+                            Seat = record.Seat,
+                            CinemaRoom = record.CinemaRoom
+                        };
+
+                        datos.Add(dato);
                     }
-                    else
-                    {
-                        return new List<Dato>();
-                    }
+
+                    return datos;
                 }
             }
             catch (Exception ex)
@@ -245,10 +258,8 @@ namespace CinemaKino
         {
             try
             {
-                // Leer los datos del archivo XML
                 List<Dato> datos = LeerXML();
 
-                // Insertar los datos en MongoDB
                 Insertar(datos);
 
                 MessageBox.Show("Datos de XML agregados correctamente a MongoDB");
