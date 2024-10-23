@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CinemaKino
 {
@@ -57,6 +58,18 @@ namespace CinemaKino
             _datos = database.GetCollection<Dato>("datos");
         }
 
+        public List<Dato> ObtenerTodos()
+        {
+            try
+            {
+                return _datos.Find(_ => true).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public void Agregar(List<Dato> datos)
         {
             try
@@ -83,4 +96,5 @@ namespace CinemaKino
             }
         }
     }
+
 }
